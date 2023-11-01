@@ -1,0 +1,72 @@
+---
+title: "Homework solutions"
+subtitle: "Environmental Statistics 1"
+author: "DAG"
+format:  pdf
+number-sections: true
+toc: false
+editor: source
+geometry:
+  - top=20mm
+  - left=20mm
+  - bottom=20mm
+  - right=20mm
+
+monofontoptions: 
+  - Scale=0.8
+---
+
+```{r}
+#| echo: false
+library(knitr)
+opts_chunk$set(fig.path='figure/', fig.align='center', fig.width=4, fig.height=4.3, fig.show='hold', cache=TRUE, tidy=F, tidy.opts=list(width.cutoff=60), size="small")
+```
+
+
+## Bernoulli regression
+
+*In the 1996 presidential elections in the USA, Bill Clinton ran against Bob Dole. faraway’s nes96 are the results
+of a poll, along with a range of predictors.*
+
+### Load the data and look at the summary of it.
+
+
+```{r}
+library("faraway")
+library("ggplot2")
+data("nes96")
+```
+
+
+### Plot vote as a function of population density.
+
+
+```{r}
+
+plot(vote ~ log(popul+1), data=nes96)
+
+```
+
+### Fit a GLM to represent this relationship
+
+
+```{r}
+
+fm <- glm(vote ~ log(popul+1), data=nes96, family=binomial)
+summary(fm)
+
+```
+*Yes it is: the response variable is internally coded as Clinton=0, Dole=1 (in alphabetical sequence). Hence the slope
+estimate is of the probability of 1 (i.e. voting Dole) as affected by population density.*
+
+
+
+
+
+
+
+
+
+
+
+
