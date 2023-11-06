@@ -7,6 +7,10 @@ number-sections: false
 toc: false
 editor: visual
 out-width: 100%
+include-in-header: 
+  text: |
+    \usepackage{fvextra}
+    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
 geometry:
   - top=20mm
   - left=20mm
@@ -48,7 +52,7 @@ barplot(
   ylab = "Number of Turtles",
   main = "Sex Determination in Turtles",
   legend.text = c("Male", "Female"),
-  args.legend = list(x = "topright")
+  args.legend = list(x ='topright', inset=c(-0.1,0), bty = "n")
 )
 
 ```
@@ -184,9 +188,33 @@ plot(chd~chol, xlab="Fasting serum cholesterol [in mg/dl]",
      ylab= "Coronary heart disease developed")
 ```
 
+## Incidence
+
+```{r}
+library(ggplot2)
+library(ggpubr)
+
+g1 <- ggplot(wcgs, aes(x = weight, fill = chd)) + 
+  geom_bar(position = "stack") + labs(x="Weight [in lbs]",y="Incidence", fill = 
+                                        "Coronary heart \ndisease developed")
+
+
+g2 <- ggplot(wcgs, aes(x = chol, fill = chd)) + 
+  geom_bar(position = "stack") + labs(x="Fasting serum \n cholesterol [in mg/dl]",y="Incidence", fill = 
+                                        "Coronary heart \ndisease developed")
+
+
+z <- ggarrange(g1, g2, 
+          labels = c("A", "B"),
+          ncol = 1, nrow = 2)
+z
+```
+
+
 ## Subexercise 2.2
 
 ```{r}
+attach(wcgs)
 modchd <- glm(chd~weight + chol + weight*chol, family="binomial")
 
 summary(modchd)
@@ -209,22 +237,6 @@ data("wcgs")
 library(scatterplot3d)
 #install.packages("scatterplot3d")
 
-#2 Farben: 
-colors <- c("#999999", "#E69F00")
-colors <- colors[as.numeric(wcgs$chd)]
-
-attach(wcgs)
-scatterplot3d(weight, chol, as.numeric(chd)-1, type="h", xlab="Weight [in lbs]", 
-              ylab="Fasting serum cholesterol [in mg/dl]", 
-              zlab= "Coronary heart disease developed", 
-              pch = "+", color = colors, 
-              main = "3D Scatter Plot")
-
-
-```
-
-```{r}
-# Fit a logistic regression model to predict CHD using weight and chol as predictors
 sum(is.na(wcgs$chol))
 
 wcgs <- wcgs[!is.na(wcgs$chol),]
@@ -234,7 +246,45 @@ mod <- glm(chd~weight + chol + weight*chol, family="binomial", data = wcgs)
 
 
 # Get predicted values of mpg from wt and disp
-wcgs$pred_chd <- predict(mod, type = "response")
+wcgs$pred_chd_1 <- predict(mod, type = "response")
+
+#2 Farben: 
+colors <- c("orange", "darkgreen")
+colors <- colors[as.numeric(wcgs$chd)]
+
+scatterplot3d(wcgs$weight, wcgs$chol, wcgs$pred_chd_1, type="p", xlab="Weight [in lbs]", 
+              ylab="Fasting serum cholesterol [in mg/dl]",
+              angle=55,
+              zlab= "Coronary heart disease developed", 
+              pch = "+", color = colors, 
+              main = "3D Scatter Plot")
+
+legend("bottom", legend = levels(wcgs$chd),
+       col =  c("orange", "darkgreen"), pch = 16,
+       inset = -0.45, xpd = TRUE, horiz = TRUE)
+
+
+```
+
+```{r}
+# Fit a logistic regression model to predict CHD using weight and chol as predictors
+
+
+library(faraway)
+data("wcgs")
+library(scatterplot3d)
+
+
+sum(is.na(wcgs$chol))
+
+wcgs <- wcgs[!is.na(wcgs$chol),]
+
+# Generate a linear model
+mod <- glm(chd~weight + chol + weight*chol, family="binomial", data = wcgs)
+
+
+# Get predicted values of mpg from wt and disp
+wcgs$pred_chd_2 <- predict(mod, type = "response")
 
 
 # Define a function to remove outliers
@@ -257,7 +307,7 @@ wcgs$weight <- remove_outliers(wcgs$weight)
 wcgs$chol <- remove_outliers(wcgs$chol)
 
 
-scatterplot3d(wcgs$weight, wcgs$chol, wcgs$pred_chd,
+scatterplot3d(wcgs$weight, wcgs$chol, wcgs$pred_chd_2,
               pch = 16, angle=55, type = "p", cex.symbols = 0.5,
               xlab="Weight [in lbs]",
               ylab="Fasting serum cholesterol [in mg/dl]", 
