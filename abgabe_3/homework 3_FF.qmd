@@ -237,15 +237,17 @@ data("wcgs")
 library(scatterplot3d)
 #install.packages("scatterplot3d")
 
+# count cells with na values in the chol column
 sum(is.na(wcgs$chol))
 
+#remove na's to avoid errors
 wcgs <- wcgs[!is.na(wcgs$chol),]
 
 # Generate a linear model
 mod <- glm(chd~weight + chol + weight*chol, family="binomial", data = wcgs)
 
 
-# Get predicted values of mpg from wt and disp
+# Get predicted values of chd from chol and weight
 wcgs$pred_chd_1 <- predict(mod, type = "response")
 
 #2 Farben: 
@@ -269,21 +271,21 @@ legend("bottom", legend = levels(wcgs$chd),
 ```{r}
 # Fit a logistic regression model to predict CHD using weight and chol as predictors
 
-
 library(faraway)
 data("wcgs")
 library(scatterplot3d)
 
-
+# count cells with na values in the chol column
 sum(is.na(wcgs$chol))
 
+#remove na's to avoid errors
 wcgs <- wcgs[!is.na(wcgs$chol),]
 
 # Generate a linear model
 mod <- glm(chd~weight + chol + weight*chol, family="binomial", data = wcgs)
 
 
-# Get predicted values of mpg from wt and disp
+# Get predicted values of chd from chol and weight
 wcgs$pred_chd_2 <- predict(mod, type = "response")
 
 
